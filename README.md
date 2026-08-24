@@ -109,7 +109,7 @@ nfl-upset-predictor/\
 │   ├── nflgames.RData\
 │   └── master_nflschedule.rds\
 └── images/\
-    └── nfl-upset-predictor.png\
+    └── nfl-upset-predictor.png
 
 ## Contributors
 
