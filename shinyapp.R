@@ -5,7 +5,7 @@ library(modelr)
 
 master_nflschedule <- readRDS("data/master_nflschedule.rds")
 
-data<- master_nflschedule
+
 ui<-fluidPage(title = "NFL Upset Predictor", 
               titlePanel("NFL Upset Predictor"),
               sidebarLayout(
@@ -47,7 +47,7 @@ ui<-fluidPage(title = "NFL Upset Predictor",
                     ),
                     tabPanel("About",
                              a("Visit Our GitHub Repository and README File", 
-                               href = "https://github.com/drlowe28/datasci306final", target ="_blank"),
+                               href = "https://github.com/gkobrossy/nfl-upset-predictor", target ="_blank"),
                              tableOutput("div_table")
                     )
                   )
@@ -219,7 +219,7 @@ server<-function(input, output, session){
     if(input$team != "All") {
       summary(logmodel())
     } else {
-      "PICK A TEAM"
+      "Please select a team."
     }
   })
   
@@ -263,7 +263,7 @@ server<-function(input, output, session){
       summary(calc_logmodel())
     }
     else{
-      "PICK A TEAM"
+      "Please select a team."
     }
   })
   
