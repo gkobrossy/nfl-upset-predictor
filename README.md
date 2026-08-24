@@ -99,13 +99,17 @@ The `master_nflschedule.rds` file included in this repository represents the ver
   game outcomes.
   
 ## File Layout
+
+
 nfl-upset-predictor/\
-├── shinyapp.R            
-├── prep.R          
+├── README.md\
+├── shinyapp.R\
+├── prep.R\
 ├── data/\
+│   ├── nflgames.RData\
 │   └── master_nflschedule.rds\
-│   └── nflgames.RData\
-└── README.md\
+└── images/\
+    └── nfl-upset-predictor.png\
 
 ## Contributors
 
