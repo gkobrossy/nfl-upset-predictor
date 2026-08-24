@@ -50,7 +50,6 @@ ui<-fluidPage(title = "NFL Upset Predictor",
                     tabPanel("About",
                              a("Visit Our GitHub Repository and README File", 
                                href = "https://github.com/drlowe28/datasci306final", target ="_blank"),
-                             textOutput("diff_regression"),
                              tableOutput("div_table")
                     )
                   )
@@ -63,46 +62,62 @@ server<-function(input, output, session){
   filtered_data<-reactive({
     data<- master_nflschedule
     if (input$team != "All"){
-      data <- master_nflschedule |> filter(home_team == input$team | away_team == input$team)
+      data <- master_nflschedule |> 
+        filter(home_team == input$team | away_team == input$team)
     }
     if(input$playoff == "Regular Season Games") {
-      data <- data |> filter(game_type == "REG")
+      data <- data |> 
+        filter(game_type == "REG")
     } else if(input$playoff == "Postseason Games") {
-      data <- data |> filter(game_type != "REG")
+      data <- data |> 
+        filter(game_type != "REG")
     }
-    data <- data |> filter(between(season, input$year[1], input$year[2])) 
+    data <- data |> 
+      filter(between(season, input$year[1], input$year[2])) 
     if(input$outdoors == "Indoors") {
-      data <- data |> filter((roof == "dome" | roof == "closed"))
+      data <- data |> 
+        filter((roof == "dome" | roof == "closed"))
     } else if(input$outdoors == "Outdoors") {
-      data <- data |> filter(between(temp, input$temp[1], input$temp[2])) |>
+      data <- data |> 
+        filter(between(temp, input$temp[1], input$temp[2])) |>
         filter(between(wind, input$wind[1], input$wind[2]))
     } else {
-      data <- data |> filter(between(temp, input$temp[1], input$temp[2]) | 
-                               (roof == "dome" | roof == "closed")) |>
+      data <- data |> 
+        filter(
+          between(temp, input$temp[1], input$temp[2]) | 
+            (roof == "dome" | roof == "closed")) |>
         filter(between(wind, input$wind[1], input$wind[2]) | 
                  (roof == "dome" | roof == "closed"))
     }
     if (input$rival == "Rivalries") {
-      data <- data |> filter(team_division.x == team_division.y)
+      data <- data |> 
+        filter(team_division.x == team_division.y)
     } else if (input$rival == "Non-Rivalries") {
-      data <- data |> filter(team_division.x != team_division.y)
+      data <- data |> 
+        filter(team_division.x != team_division.y)
     }
     if(input$team != "All") {
       if (input$location == "Home") {
-        data <- data |> filter(home_team == input$team)
+        data <- data |> 
+          filter(home_team == input$team)
       } else if (input$location == "Away") {
-        data <- data |> filter(away_team == input$team)
+        data <- data |> 
+          filter(away_team == input$team)
       }
       
       if(input$rest_time == "7") {
-        data <- data |> filter((home_team == input$team & home_rest <= 7) | 
-                                 (away_team == input$team & away_rest <= 7)) 
+        data <- data |> 
+          filter(
+            (home_team == input$team & home_rest <= 7) | 
+              (away_team == input$team & away_rest <= 7)) 
         
       } else if (input$rest_time == "14") {
-        data <- data |> filter((home_team == input$team & home_rest <= 14) | 
+        data <- data |> 
+          filter((home_team == input$team & home_rest <= 14) | 
                                  (away_team == input$team & away_rest <= 14))
       } else if (input$rest_time == "21") {
-        data <- data |> filter((home_team == input$team & home_rest <= 21) | 
+        data <- data |> 
+          filter((home_team == input$team & home_rest <= 21) | 
                                  (away_team == input$team & away_rest <= 21))
       }
     }
@@ -116,11 +131,16 @@ server<-function(input, output, session){
       mutate(upset = ((spread_line >= 3.5 & margin < 0) | 
                         (spread_line <= -3.5 & margin > 0)))
     
-    upsets|> ggplot(aes(x = spread_line, fill = upset)) + geom_histogram() +
-      labs(title = "Upsets based on Spread Line over Selected Parameters",
-           x = "Spread Line",
-           caption = "(Positive spread means home team is favored)",
-           y = "Count", fill = "Was the Selected Team Involved in an Upset?")+scale_fill_discrete(labels = c("FALSE" = "No", "TRUE" = "Yes"))+
+    upsets|> 
+      ggplot(aes(x = spread_line, fill = upset)) + 
+      geom_histogram() +
+      labs(
+        title = "Upsets based on Spread Line over Selected Parameters",
+        x = "Spread Line",
+        caption = "(Positive spread means home team is favored)",
+        y = "Count", fill = "Was the Selected Team Involved in an Upset?"
+        ) +
+      scale_fill_discrete(labels = c("FALSE" = "No", "TRUE" = "Yes")) +
       theme(plot.caption = element_text(size = 12))
   })
   output$l <- renderPlot({
@@ -129,54 +149,63 @@ server<-function(input, output, session){
     upsets<- filtered_data() |> 
       mutate(upset = ((spread_line >= 3.5 & margin < 0) | 
                         (spread_line <= -3.5 & margin > 0)))
-    upsets |> group_by(season) |> summarize(upset_prop = mean(upset)) |>
-      ggplot(aes(x = season, y = upset_prop)) + geom_line() + 
+    upsets |> 
+      group_by(season) |> 
+      summarize(upset_prop = mean(upset)) |>
+      ggplot(aes(x = season, y = upset_prop)) + 
+      geom_line() + 
       geom_smooth(method = "lm") + 
-      labs(title = "Upset Proportion over Selected Parameters",
-           x = "Season",
-           y = "Upset Proportion")
+      labs(
+        title = "Upset Proportion over Selected Parameters",
+        x = "Season",
+        y = "Upset Proportion"
+        )
   })
   
   
   upsetModel<-reactive({
     modeldata <- master_nflschedule
     if (input$team != "All"){
-      modeldata <- master_nflschedule |> filter(home_team == input$team | away_team == input$team)
+      modeldata <- master_nflschedule |> 
+        filter(home_team == input$team | away_team == input$team)
     }
-    modeldata <- modeldata |> mutate(upset = as.numeric(((spread_line >= 3.5 & margin < 0) | 
-                                                           (spread_line <= -3.5 & margin > 0))),
-                                     outdoors = (roof != "dome" & roof != "closed"),
-                                     home = (home_team == input$team), 
-                                     playoff = (game_type != "REG"),
-                                     rival = (team_division.x == team_division.y),
-                                     rest_time = case_when(
-                                       home_team == input$team ~ home_rest,
-                                       away_team == input$team ~ away_rest,
-                                       .default = NA
-                                     ),
-                                     temp_outdoor = ifelse(outdoors == 1, temp, 0),
-                                     wind_outdoor = ifelse(outdoors == 1, wind, 0))
+    modeldata <- modeldata |> mutate(
+      upset = as.numeric(
+        ((spread_line >= 3.5 & margin < 0) | (spread_line <= -3.5 & margin > 0))
+        ),
+      outdoors = (roof != "dome" & roof != "closed"),
+      home = (home_team == input$team), 
+      playoff = (game_type != "REG"),
+      rival = (team_division.x == team_division.y),
+      rest_time = case_when(
+        home_team == input$team ~ home_rest,
+        away_team == input$team ~ away_rest,
+        .default = NA
+        ),
+      temp_outdoor = ifelse(outdoors == 1, temp, 0),
+      wind_outdoor = ifelse(outdoors == 1, wind, 0))
     modeldata
     
   })
   logmodel <- reactive ({
-    glmModel <- glm(upset ~ outdoors + home + playoff + rival + rest_time + temp_outdoor + wind_outdoor,family = "binomial",data = upsetModel())
+    glmModel <- glm(upset ~ outdoors + home + playoff + rival + rest_time + temp_outdoor + wind_outdoor,family = "binomial", data = upsetModel())
     glmModel
   })
   
   textModel <- reactive ({
-    if(input$team == "All" | input$outdoors == "Both" | input$rival == "Both" | input$playoff == "Both" | 
-       input$location == "Both") {
+    if(input$team == "All" | input$outdoors == "Both" | input$rival == "Both" | input$playoff == "Both" | input$location == "Both") {
       "Must pick parameters other than \"Both\" for all of the parameters to receive a prediction."
     } else {
-      tmodel <- data.frame(team = input$team, 
-                           outdoors = ifelse(input$outdoors == "Outdoors", T, F), 
-                           home = ifelse(input$location == "Home", T, F), 
-                           playoff = ifelse(input$playoff != "Regular Season Games", T, F),
-                           rival = ifelse(input$rival == "Rivalries", T, F),
-                           rest_time = as.numeric(input$rest_time), 
-                           temp_outdoor = ifelse(input$outdoors == "Outdoors", max(input$temp), 0),
-                           wind_outdoor = ifelse(input$outdoors == "Outdoors", max(input$wind), 0))
+      tmodel <- data.frame(
+        team = input$team, 
+        outdoors = ifelse(input$outdoors == "Outdoors", T, F), 
+        home = ifelse(input$location == "Home", T, F), 
+        playoff = ifelse(input$playoff != "Regular Season Games", T, F),
+        rival = ifelse(input$rival == "Rivalries", T, F),
+        rest_time = as.numeric(input$rest_time), 
+        temp_outdoor = ifelse(input$outdoors == "Outdoors", max(input$temp), 0),
+        wind_outdoor = ifelse(input$outdoors == "Outdoors", max(input$wind), 0)
+        )
       tmodel
     }
     
@@ -197,8 +226,7 @@ server<-function(input, output, session){
   })
   
   output$prob <- renderTable({
-    if(input$team == "All" | input$outdoors == "Both" | input$rival == "Both" | input$playoff == "Both" | 
-       input$location == "Both") {
+    if(input$team == "All" | input$outdoors == "Both" | input$rival == "Both" | input$playoff == "Both" | input$location == "Both") {
       "Must pick parameters other than \"Both\" for all of the parameters to receive a prediction."
     }
     else{
@@ -207,7 +235,8 @@ server<-function(input, output, session){
         mutate(exppred = exp(pred)) |> 
         mutate(upsetprob = exppred / (1+exppred)) |>
         rename("Probability of Being Involved in an Upset" = upsetprob)
-      prob_output|>select(ncol(prob_output))
+      prob_output|>
+        select(ncol(prob_output))
     }
   })  
   
@@ -215,8 +244,12 @@ server<-function(input, output, session){
   
   
   calculator_table<-reactive({
-    calculator_tab<-upsetModel()|>mutate(was_upset = as.numeric((home_team == input$team & margin < 0 & spread_line >= 3.5)|
-                                                                  (away_team == input$team & margin > 0 & spread_line <= -3.5)))
+    calculator_tab<-upsetModel()|>
+      mutate(
+        was_upset = as.numeric(
+          (home_team == input$team & margin < 0 & spread_line >= 3.5)|
+          (away_team == input$team & margin > 0 & spread_line <= -3.5))
+        )
     calculator_tab
   })
   
@@ -251,7 +284,8 @@ server<-function(input, output, session){
         mutate(exppred = exp(pred)) |> 
         mutate(upsetprob = exppred / (1+exppred)) |>
         rename("Probability of Being Upset by Another Team" = upsetprob)
-      calc_prob_output|>select(ncol(calc_prob_output))
+      calc_prob_output|>
+        select(ncol(calc_prob_output))
     }
   })
   
@@ -261,21 +295,25 @@ server<-function(input, output, session){
     filtered_data()|>
       mutate(was_upset = (home_team == input$team & margin < 0 & spread_line >= 3.5)|
                (away_team == input$team & margin > 0 & spread_line <= -3.5))|>
-      ggplot(aes(x = spread_line, fill = was_upset))+geom_histogram()+labs(
-        x = "Spread Line", y = "Count", caption = "(Positive spread means home team is favored)", title = "Games Where Your Selected Team was Upset by Another Team (Must Pick a Team)", fill = "Was the selected team upset?") + scale_fill_discrete(labels = c("FALSE" = "No", "TRUE" = "Yes")) + theme(plot.caption = element_text(size = 12))
+      ggplot(aes(x = spread_line, fill = was_upset)) +
+      geom_histogram() +
+      labs(
+        x = "Spread Line", 
+        y = "Count", 
+        caption = "(Positive spread means home team is favored)", 
+        title = "Games Where Your Selected Team was Upset by Another Team (Must Pick a Team)", 
+        fill = "Was the selected team upset?"
+        ) + 
+      scale_fill_discrete(labels = c("FALSE" = "No", "TRUE" = "Yes")) + 
+      theme(plot.caption = element_text(size = 12))
   })
   
   output$div_table <- renderTable({
-    master_nflschedule |> distinct(home_team, team_division.x) |> 
+    master_nflschedule |> 
+      distinct(home_team, team_division.x) |> 
       rename("Team" = home_team, "Division" = team_division.x) |>
       arrange(Division, Team)
-    
   })   
-  
-  output$diff_regression <- renderText({
-    "This app uses 2 different logistic regression models. The first model, in the \"Upset Regression\" tab predicts the probability of the selected team being involved in an upset (Either upsetting another team or being upset by another team).\n
-    The second model, in the \"Upset Calculator\" tab predicts the probability of the selected team being upset by another team. \n"
-  })
 }
 
 shinyApp(ui, server)
