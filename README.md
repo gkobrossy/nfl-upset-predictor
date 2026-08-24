@@ -6,6 +6,11 @@ the probability that a team is involved in an upset or is upset by another team.
 A game is considered an upset when a team is favored by at least 3.5 points
 but does not win the game.
 
+## Application Preview
+
+The application provides interactive filtering and visualizations for exploring NFL upsets against the point spread.
+![NFL Upset Predictor](images/nfl-upset-predictor.png)
+
 ## Course Project
 
 This project was developed collaboratively as part of an 
@@ -18,19 +23,16 @@ The application uses the following R packages:
 - `tidyverse`
 - `shiny`
 - `modelr`
-- `nflreadr` was used to obtain NFL data and is not required to run 
-the existing application.
+- `nflreadr` (Used by `prep.R` to obtain NFL data)
 
-The following `.RData` files are included in the repository:
+The following data files are included in the repository:
 
-- `nflgames.RData`
-- `postseasongames.RData`
-- `nflteams.RData`
-- `master_nflschedule.RData`
+- `nflgames.RData` (Course-provided NFL game data)
+- `master_nflschedule.rds` (processed regular-season and postseason data used by the Shiny application)
 
 `nflgames.RData` was provided as part of the course and contains NFL game data originally obtained from the nflverse project using `nflreadr`. 
 The original code used to create this `.RData` file was not provided with the course materials.\
-`prep.R` contains the code developed for this project to process the course-provided data and create the additional datasets used by the application.
+`prep.R` contains the code developed for this project to process the course-provided data and create the additional, processed dataset used by the application.
 
 ## Project Overview
 - The application allows users to explore NFL upsets from 1999–2025 while 
@@ -56,7 +58,7 @@ Two logistic regression models are used:
 The models are available in the **Upset Regression** and **Upset Calculator** 
 tabs of the application, respectively, and require a specific team to be selected.
 
-These models are also used to estimate the probability of a future upset (See limitations for potential errors).
+These models are also used to estimate the probability of a future upset (See limitations below).
  
 ## How to Use the App
 
@@ -72,14 +74,19 @@ filters.
 ## How to Run the App (Local)
 1. Clone or download this repository
 2. Open the project file in RStudio
-3. Open `shinyapp.R`
-4. Click **Run**
+3. Install the required R packages, if needed
+4. Open `shinyapp.R`
+5. Click **Run**
 
-The required `.RData` files are included in the `data/` directory, so
+The required data files are included in the `data/` directory, so
 running `prep.R` is not necessary to launch the existing application.
 
-`prep.R` can be run to reproduce the derived datasets from
+`prep.R` can be run to reproduce the NFL game datasets derived from
 `nflgames.RData`.
+
+**Note:** `prep.R` retrieves NFL data from `nflreadr`, 
+so the resulting dataset may change slightly if the underlying NFLverse data are updated. 
+The `master_nflschedule.rds` file included in this repository represents the version used by the current application.
  
 ## Limitations
 
@@ -96,10 +103,8 @@ nfl-upset-predictor/\
 ├── shinyapp.R            
 ├── prep.R          
 ├── data/\
-│   └── master_nflschedule.RData\
+│   └── master_nflschedule.rds\
 │   └── nflgames.RData\
-│   └── nflteams.RData\
-│   └── postseasongames.RData\
 └── README.md\
 
 ## Contributors
