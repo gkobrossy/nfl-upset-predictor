@@ -2,10 +2,8 @@ library(tidyverse)
 library(shiny)
 library(modelr)
 
-load("data/nflgames.RData")
-load("data/postseasongames.RData")
-load("data/nflteams.RData")
-load("data/master_nflschedule.RData")
+
+master_nflschedule <- readRDS("data/master_nflschedule.rds")
 
 data<- master_nflschedule
 ui<-fluidPage(title = "NFL Upset Predictor", 
@@ -13,7 +11,7 @@ ui<-fluidPage(title = "NFL Upset Predictor",
               sidebarLayout(
                 sidebarPanel(
                   selectInput("team", "NFL Team (Select a team for more options)", 
-                              c("All", sort(unique(nflgames$home_team)))),
+                              c("All", sort(unique(master_nflschedule$home_team)))),
                   conditionalPanel(
                     "input.team != 'All'",
                     radioButtons("location", "Home vs. Away", c("Both", "Home", "Away")),
