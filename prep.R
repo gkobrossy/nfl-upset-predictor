@@ -1,7 +1,6 @@
 library(tidyverse)
-library(shiny)
 library(nflreadr)
-library(modelr)
+
 
 load("data/nflgames.RData")
 
